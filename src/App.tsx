@@ -27,26 +27,17 @@ export default function App() {
   useEffect(() => {
     // Global error sanitizer to prevent circular structure errors in the preview environment
     const handleError = (event: ErrorEvent) => {
-      // Prevent the error from bubbling up and causing circular structure issues in the logger
-      if (event) {
-        const message = event.message || (event.error && event.error.message) || "Unknown Script Error";
-        console.warn("Caught global error:", String(message));
-        
-        // If it's a circular structure error, we definitely want to stop it here
-        if (message.includes && message.includes("circular structure")) {
-          event.stopImmediatePropagation();
-        }
-        
+      if (event.error) {
+        const message = event.error.message || String(event.error);
+        console.warn("Caught global error:", message);
+        // Prevent the error from bubbling up and causing circular structure issues in the logger
         event.preventDefault();
       }
     };
 
     const handleRejection = (event: PromiseRejectionEvent) => {
-      if (event) {
-        const reason = event.reason?.message || String(event.reason) || "Unknown Rejection";
-        console.warn("Caught unhandled promise rejection:", String(reason));
-        event.preventDefault();
-      }
+      console.warn("Caught unhandled promise rejection:", event.reason?.message || String(event.reason));
+      event.preventDefault();
     };
 
     window.addEventListener('error', handleError);
@@ -58,18 +49,23 @@ export default function App() {
 
     // Vturb Script Integration
     const loadVturb = () => {
-      const script = document.createElement("script");
-      script.src = "https://scripts.converteai.net/1b23d824-f7d5-46ac-8edc-700038ffb33d/players/69d69717eeab8ff9b72c1914/v4/player.js";
-      script.async = true;
-      document.head.appendChild(script);
+      const scriptId = "vturb-script-69c86de05610b6167ac4ff63";
+      if (!document.getElementById(scriptId)) {
+        const script = document.createElement("script");
+        script.id = scriptId;
+        script.src = "https://scripts.converteai.net/1b23d824-f7d5-46ac-8edc-700038ffb33d/players/69c86de05610b6167ac4ff63/v4/player.js";
+        script.async = true;
+        document.head.appendChild(script);
+      }
     };
 
-    loadVturb();
+    const vturbTimeout = setTimeout(loadVturb, 1000);
 
     return () => {
       window.removeEventListener('error', handleError);
       window.removeEventListener('unhandledrejection', handleRejection);
       clearInterval(timer);
+      clearTimeout(vturbTimeout);
     };
   }, []);
 
@@ -78,37 +74,29 @@ export default function App() {
 
     // Use a small timeout to ensure the DOM element is rendered by React after showContent is true
     const timeoutId = setTimeout(() => {
-      try {
-        const funnelEl = document.getElementById('hotmart-sales-funnel');
-        if (hotmartWrapperRef.current && funnelEl) {
-          if (!document.getElementById('hotmart-script-loaded')) {
-            const scriptLoad = document.createElement('script');
-            scriptLoad.id = 'hotmart-script-loaded';
-            scriptLoad.src = "https://checkout.hotmart.com/lib/hotmart-checkout-elements.js";
-            scriptLoad.async = true;
-            
-            scriptLoad.onload = () => {
-              try {
-                const scriptSetup = document.createElement('script');
-                scriptSetup.innerHTML = "if(window.checkoutElements) { try { const el = document.getElementById('hotmart-sales-funnel'); if(el) { checkoutElements.init('salesFunnel').mount('#hotmart-sales-funnel'); } } catch(e) { console.warn('Hotmart Setup Error:', String(e.message || e)); } }";
-                document.body.appendChild(scriptSetup);
-              } catch (setupErr) {
-                console.warn("Hotmart script setup injection failed");
-              }
-            };
-            
-            document.body.appendChild(scriptLoad);
-          } else {
-            // Script already loaded, just run the setup
+      const funnelEl = document.getElementById('hotmart-sales-funnel');
+      if (hotmartWrapperRef.current && funnelEl) {
+        if (!document.getElementById('hotmart-script-loaded')) {
+          const scriptLoad = document.createElement('script');
+          scriptLoad.id = 'hotmart-script-loaded';
+          scriptLoad.src = "https://checkout.hotmart.com/lib/hotmart-checkout-elements.js";
+          scriptLoad.async = true;
+          
+          scriptLoad.onload = () => {
             const scriptSetup = document.createElement('script');
-            scriptSetup.innerHTML = "if(window.checkoutElements) { try { const el = document.getElementById('hotmart-sales-funnel'); if(el) { checkoutElements.init('salesFunnel').mount('#hotmart-sales-funnel'); } } catch(e) { console.warn('Hotmart Setup Error:', String(e.message || e)); } }";
+            scriptSetup.innerHTML = "if(window.checkoutElements) { try { const el = document.getElementById('hotmart-sales-funnel'); if(el) { checkoutElements.init('salesFunnel').mount('#hotmart-sales-funnel'); } } catch(e) { console.warn('Hotmart Setup Error:', e.message || String(e)); } }";
             document.body.appendChild(scriptSetup);
-          }
+          };
+          
+          document.body.appendChild(scriptLoad);
+        } else {
+          // Script already loaded, just run the setup
+          const scriptSetup = document.createElement('script');
+          scriptSetup.innerHTML = "if(window.checkoutElements) { try { const el = document.getElementById('hotmart-sales-funnel'); if(el) { checkoutElements.init('salesFunnel').mount('#hotmart-sales-funnel'); } } catch(e) { console.warn('Hotmart Setup Error:', e.message || String(e)); } }";
+          document.body.appendChild(scriptSetup);
         }
-      } catch (err) {
-        console.warn("Hotmart initialization block failed");
       }
-    }, 2000);
+    }, 1500);
 
     return () => clearTimeout(timeoutId);
   }, [showContent]);
@@ -181,7 +169,7 @@ export default function App() {
             {/* Vturb Smart Player Container */}
             <div className="w-full" ref={playerContainerRef}>
               <div dangerouslySetInnerHTML={{ 
-                __html: '<vturb-smartplayer id="vid-69d69717eeab8ff9b72c1914" style="display: block; margin: 0 auto; width: 100%; "></vturb-smartplayer>' 
+                __html: '<vturb-smartplayer id="vid-69c86de05610b6167ac4ff63" style="display: block; margin: 0 auto; width: 100%;"></vturb-smartplayer>' 
               }} />
             </div>
             
