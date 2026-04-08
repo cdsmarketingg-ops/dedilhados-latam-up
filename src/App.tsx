@@ -210,59 +210,59 @@ export default function App() {
               </section>
 
               {/* Headline & Subheadline */}
-              <section className="text-center space-y-6 max-w-4xl mx-auto">
-                <h2 className="text-3xl md:text-5xl font-bold leading-tight">
+              <section className="text-center space-y-6 max-w-4xl mx-auto px-2">
+                <h2 className="text-2xl md:text-5xl font-bold leading-tight tracking-tight">
                   ¿Você já sabe os acordes… mas ainda não soa profissional no teclado?
                 </h2>
-                <p className="text-xl md:text-2xl text-zinc-400 font-light">
+                <p className="text-lg md:text-2xl text-zinc-400 font-light leading-relaxed">
                   Descubra como transformar acordes simples em um som bonito e envolvente usando dedilhados e arpejos prontos.
                 </p>
               </section>
 
               {/* Product Showcase & Objection Handling */}
-              <section className="grid md:grid-cols-2 gap-12 items-center">
-                <div className="relative group">
-                  <div className="absolute -inset-1 bg-gradient-to-r from-orange-500 to-red-600 rounded-3xl blur opacity-25 group-hover:opacity-40 transition duration-1000"></div>
-                  <div className="relative bg-[#0a0a0a] rounded-3xl border border-white/5 overflow-hidden">
+              <section className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+                <div className="relative group order-2 md:order-1">
+                  <div className="absolute -inset-1 bg-gradient-to-r from-orange-500 to-red-600 rounded-2xl md:rounded-3xl blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
+                  <div className="relative bg-[#0a0a0a] rounded-2xl md:rounded-3xl border border-white/5 overflow-hidden shadow-2xl">
                     <img 
                       src="https://eliabcamposteclas.com/wp-content/uploads/2026/04/ChatGPT-Image-8-de-abr.-de-2026-11_34_22.jpg" 
                       alt="Dedilhados e Arpejos" 
-                      className="w-full h-auto object-cover"
+                      className="w-full h-auto object-cover transform transition duration-500 group-hover:scale-105"
                       referrerPolicy="no-referrer"
                     />
                   </div>
                 </div>
                 
-                <div className="space-y-8">
-                  <div className="space-y-4">
-                    <h3 className="text-xl font-bold uppercase tracking-widest text-orange-500">O que você vai receber:</h3>
-                    <ul className="space-y-4">
+                <div className="space-y-8 order-1 md:order-2">
+                  <div className="space-y-6">
+                    <h3 className="text-lg font-bold uppercase tracking-[0.2em] text-orange-500">O que você vai receber:</h3>
+                    <ul className="space-y-5">
                       {[
                         "Padrões de dedilhados prontos pra usar",
                         "Arpejos simples que já soam profissionais",
                         "Aplicação prática nos acordes que você já aprendeu",
                         "Combinações que deixam sua música muito mais bonita"
                       ].map((item, i) => (
-                        <li key={i} className="flex items-start gap-3 text-zinc-300">
-                          <div className="mt-1 bg-orange-500/20 p-1 rounded">
-                            <CheckCircle className="w-4 h-4 text-orange-500" />
+                        <li key={i} className="flex items-start gap-4 text-zinc-300">
+                          <div className="mt-1 bg-orange-500/20 p-1.5 rounded-lg shrink-0">
+                            <CheckCircle className="w-5 h-5 text-orange-500" />
                           </div>
-                          <span className="text-lg">{item}</span>
+                          <span className="text-lg md:text-xl leading-snug">{item}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
 
-                  <div className="space-y-4 bg-zinc-900/50 p-6 rounded-2xl border border-white/5">
-                    <h3 className="text-sm font-bold uppercase tracking-widest text-zinc-500">Sin barreiras:</h3>
-                    <ul className="space-y-2">
+                  <div className="space-y-4 bg-zinc-900/30 p-6 md:p-8 rounded-2xl border border-white/5 backdrop-blur-sm">
+                    <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-500">Sin barreiras:</h3>
+                    <ul className="space-y-3">
                       {[
                         "Mesmo que você seja iniciante",
                         "Mesmo que ainda toque travado",
                         "Mesmo que nunca tenha usado dedilhados"
                       ].map((item, i) => (
-                        <li key={i} className="flex items-center gap-2 text-sm text-zinc-400">
-                          <ArrowRight className="w-3 h-3 text-orange-500" />
+                        <li key={i} className="flex items-center gap-3 text-sm md:text-base text-zinc-400">
+                          <ArrowRight className="w-4 h-4 text-orange-500 shrink-0" />
                           {item}
                         </li>
                       ))}
@@ -272,53 +272,59 @@ export default function App() {
               </section>
 
               {/* Bonus Section */}
-              <section className="bg-gradient-to-b from-orange-500/10 to-transparent p-8 md:p-16 rounded-[3rem] border border-orange-500/20 text-center space-y-12">
+              <section className="bg-gradient-to-b from-orange-500/10 to-transparent p-6 md:p-16 rounded-[2rem] md:rounded-[3rem] border border-orange-500/20 text-center space-y-10 md:space-y-16">
                 <div className="space-y-4">
-                  <span className="bg-orange-500 text-white text-xs font-black px-4 py-1 rounded-full uppercase tracking-tighter">Regalo Exclusivo</span>
-                  <h2 className="text-3xl md:text-5xl font-bold">Bônus Especiais</h2>
+                  <span className="bg-orange-500 text-white text-[10px] md:text-xs font-black px-4 py-1.5 rounded-full uppercase tracking-tighter shadow-lg shadow-orange-500/20">Regalo Exclusivo</span>
+                  <h2 className="text-3xl md:text-5xl font-bold tracking-tight">Bônus Especiais</h2>
                 </div>
                 
-                <div className="grid md:grid-cols-2 gap-8">
+                <div className="grid md:grid-cols-2 gap-6 md:gap-8">
                   {[
                     { title: "PDF com padrões prontos", desc: "Todo el material de apoyo para que no te pierdas ningún detalle." },
                     { title: "Guia rápido por tonalidade", desc: "Encuentra el dedilhado perfecto para cualquier canción al instante." }
                   ].map((bonus, i) => (
-                    <div key={i} className="bg-black/40 p-8 rounded-3xl border border-white/5 text-left space-y-4">
-                      <div className="w-12 h-12 bg-orange-500 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/20">
-                        <Music className="w-6 h-6 text-white" />
+                    <div key={i} className="bg-zinc-900/40 p-6 md:p-10 rounded-2xl md:rounded-[2.5rem] border border-white/5 text-left space-y-5 hover:border-orange-500/30 transition-colors group">
+                      <div className="w-14 h-14 bg-orange-500 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/20 group-hover:scale-110 transition-transform">
+                        <Music className="w-7 h-7 text-white" />
                       </div>
-                      <h3 className="text-xl font-bold">{bonus.title}</h3>
-                      <p className="text-zinc-500 text-sm leading-relaxed">{bonus.desc}</p>
+                      <div className="space-y-2">
+                        <h3 className="text-xl md:text-2xl font-bold">{bonus.title}</h3>
+                        <p className="text-zinc-500 text-sm md:text-base leading-relaxed">{bonus.desc}</p>
+                      </div>
                     </div>
                   ))}
                 </div>
               </section>
 
               {/* Urgency & Guarantee */}
-              <section className="space-y-16">
-                <div className="bg-red-600/10 border border-red-600/20 p-8 rounded-3xl text-center space-y-4">
-                  <AlertCircle className="w-8 h-8 text-red-600 mx-auto" />
-                  <h3 className="text-xl md:text-2xl font-bold text-red-500 uppercase tracking-tighter">¡Atención!</h3>
-                  <p className="text-zinc-400 max-w-2xl mx-auto">
+              <section className="space-y-12 md:space-y-24">
+                <div className="bg-red-600/5 border border-red-600/20 p-6 md:p-10 rounded-2xl md:rounded-3xl text-center space-y-4">
+                  <AlertCircle className="w-8 h-8 text-red-600 mx-auto mb-2" />
+                  <h3 className="text-lg md:text-2xl font-bold text-red-500 uppercase tracking-tighter">¡Atención!</h3>
+                  <p className="text-zinc-400 max-w-2xl mx-auto text-sm md:text-lg leading-relaxed">
                     Essa oferta é exclusiva dessa página e não estará disponível novamente. Aproveita agora essa oportunidade única de elevar seu nível musical.
                   </p>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-16 items-center">
-                  <div className="relative group">
+                <div className="grid md:grid-cols-2 gap-10 md:gap-20 items-center">
+                  <div className="relative group max-w-sm mx-auto md:max-w-none">
+                    <div className="absolute -inset-4 bg-orange-500/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     <img 
                       src="https://i.ibb.co/kgGkcHHy/Chat-GPT-Image-23-de-mar-de-2026-23-27-43.png" 
                       alt="Garantía" 
-                      className="rounded-3xl border border-white/10 shadow-2xl"
+                      className="relative rounded-2xl md:rounded-3xl border border-white/10 shadow-2xl w-full h-auto"
                       referrerPolicy="no-referrer"
                     />
-                    <div className="absolute -bottom-6 -right-6 bg-orange-500 p-6 rounded-2xl shadow-2xl shadow-orange-500/40">
-                      <ShieldCheck className="w-12 h-12 text-white" />
+                    <div className="absolute -bottom-4 -right-4 md:-bottom-8 md:-right-8 bg-orange-500 p-4 md:p-8 rounded-xl md:rounded-2xl shadow-2xl shadow-orange-500/40">
+                      <ShieldCheck className="w-8 h-8 md:w-16 md:h-16 text-white" />
                     </div>
                   </div>
-                  <div className="space-y-6">
-                    <h2 className="text-3xl md:text-4xl font-serif italic">Garantía 100% <br /> <span className="not-italic font-sans font-bold">Libre de Riesgo</span></h2>
-                    <p className="text-zinc-400 leading-relaxed text-lg">
+                  <div className="space-y-6 text-center md:text-left">
+                    <h2 className="text-3xl md:text-5xl font-serif italic leading-tight">
+                      Garantía 100% <br /> 
+                      <span className="not-italic font-sans font-bold text-white">Libre de Riesgo</span>
+                    </h2>
+                    <p className="text-zinc-400 leading-relaxed text-base md:text-xl font-light">
                       Prueba el Pack de Dedilhados y Arpejos durante 30 días y si por alguna razón sientes que no es para ti, te devolveremos el 100% de lo que invertiste.
                     </p>
                   </div>
