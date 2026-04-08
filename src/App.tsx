@@ -29,10 +29,29 @@ export default function App() {
     const handleError = (event: ErrorEvent) => {
       if (event.error) {
         const message = event.error.message || String(event.error);
+        if (message.includes("circular structure") || message.includes("renderOptions")) {
+          event.preventDefault();
+          return;
+        }
         console.warn("Caught global error:", message);
-        // Prevent the error from bubbling up and causing circular structure issues in the logger
         event.preventDefault();
       }
+    };
+
+    // Filter console logs that might contain circular structures from Vturb
+    const originalLog = console.log;
+    console.log = (...args) => {
+      const strArgs = args.map(arg => {
+        try {
+          if (typeof arg === 'object' && arg !== null) {
+            return "[Object]";
+          }
+          return arg;
+        } catch (e) {
+          return "[Circular or Unserializable]";
+        }
+      });
+      originalLog(...strArgs);
     };
 
     const handleRejection = (event: PromiseRejectionEvent) => {
@@ -49,11 +68,17 @@ export default function App() {
 
     // Vturb Script Integration
     const loadVturb = () => {
-      const scriptId = "vturb-script-69c86de05610b6167ac4ff63";
-      if (!document.getElementById(scriptId)) {
+      const newScriptId = "vturb-script-69d69717eeab8ff9b72c1914";
+      const oldScriptId = "vturb-script-69c86de05610b6167ac4ff63";
+      
+      // Remove old script if it exists
+      const oldScript = document.getElementById(oldScriptId);
+      if (oldScript) oldScript.remove();
+
+      if (!document.getElementById(newScriptId)) {
         const script = document.createElement("script");
-        script.id = scriptId;
-        script.src = "https://scripts.converteai.net/1b23d824-f7d5-46ac-8edc-700038ffb33d/players/69c86de05610b6167ac4ff63/v4/player.js";
+        script.id = newScriptId;
+        script.src = "https://scripts.converteai.net/1b23d824-f7d5-46ac-8edc-700038ffb33d/players/69d69717eeab8ff9b72c1914/v4/player.js";
         script.async = true;
         document.head.appendChild(script);
       }
@@ -64,6 +89,7 @@ export default function App() {
     return () => {
       window.removeEventListener('error', handleError);
       window.removeEventListener('unhandledrejection', handleRejection);
+      console.log = originalLog;
       clearInterval(timer);
       clearTimeout(vturbTimeout);
     };
@@ -169,7 +195,7 @@ export default function App() {
             {/* Vturb Smart Player Container */}
             <div className="w-full" ref={playerContainerRef}>
               <div dangerouslySetInnerHTML={{ 
-                __html: '<vturb-smartplayer id="vid-69c86de05610b6167ac4ff63" style="display: block; margin: 0 auto; width: 100%;"></vturb-smartplayer>' 
+                __html: '<vturb-smartplayer id="vid-69d69717eeab8ff9b72c1914" style="display: block; margin: 0 auto; width: 100%;"></vturb-smartplayer>' 
               }} />
             </div>
             
