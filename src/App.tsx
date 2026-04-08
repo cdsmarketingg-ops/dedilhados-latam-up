@@ -20,11 +20,16 @@ import {
 export default function App() {
   const [timeLeft, setTimeLeft] = useState(15 * 60); // 15 minutes
   const [progress, setProgress] = useState(83);
-  const [showContent, setShowContent] = useState(true);
+  const [showContent, setShowContent] = useState(false);
   const playerContainerRef = useRef<HTMLDivElement>(null);
   const hotmartWrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Delay to show content (155 seconds)
+    const delayTimer = setTimeout(() => {
+      setShowContent(true);
+    }, 155 * 1000);
+
     const timer = setInterval(() => {
       setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
@@ -56,6 +61,7 @@ export default function App() {
     return () => {
       clearInterval(timer);
       clearTimeout(vturbTimeout);
+      clearTimeout(delayTimer);
     };
   }, []);
 
@@ -339,7 +345,7 @@ export default function App() {
 
       {/* Footer */}
       <footer className="border-t border-white/5 py-12 px-6">
-        <div className="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 text-zinc-600 text-sm">
+        <div className="max-w-5xl mx-auto text-center text-zinc-600 text-sm">
           <p>© 2026 Eliab Campos Teclas. Todos los derechos reservados.</p>
         </div>
       </footer>
