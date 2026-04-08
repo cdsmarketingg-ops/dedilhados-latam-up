@@ -25,71 +25,35 @@ export default function App() {
   const hotmartWrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Global error sanitizer to prevent circular structure errors in the preview environment
-    const handleError = (event: ErrorEvent) => {
-      if (event.error) {
-        const message = event.error.message || String(event.error);
-        if (message.includes("circular structure") || message.includes("renderOptions")) {
-          event.preventDefault();
-          return;
-        }
-        console.warn("Caught global error:", message);
-        event.preventDefault();
-      }
-    };
-
-    // Filter console logs that might contain circular structures from Vturb
-    const originalLog = console.log;
-    console.log = (...args) => {
-      const strArgs = args.map(arg => {
-        try {
-          if (typeof arg === 'object' && arg !== null) {
-            return "[Object]";
-          }
-          return arg;
-        } catch (e) {
-          return "[Circular or Unserializable]";
-        }
-      });
-      originalLog(...strArgs);
-    };
-
-    const handleRejection = (event: PromiseRejectionEvent) => {
-      console.warn("Caught unhandled promise rejection:", event.reason?.message || String(event.reason));
-      event.preventDefault();
-    };
-
-    window.addEventListener('error', handleError);
-    window.addEventListener('unhandledrejection', handleRejection);
-
     const timer = setInterval(() => {
       setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
 
-    // Vturb Script Integration
+    // Vturb Script Integration - More robust loading
     const loadVturb = () => {
-      const newScriptId = "vturb-script-69d69717eeab8ff9b72c1914";
-      const oldScriptId = "vturb-script-69c86de05610b6167ac4ff63";
-      
-      // Remove old script if it exists
-      const oldScript = document.getElementById(oldScriptId);
-      if (oldScript) oldScript.remove();
+      if (playerContainerRef.current) {
+        // Clear and set up player element
+        playerContainerRef.current.innerHTML = '<vturb-smartplayer id="vid-69d69717eeab8ff9b72c1914" style="display: block; margin: 0 auto; width: 100%;"></vturb-smartplayer>';
 
-      if (!document.getElementById(newScriptId)) {
+        // Load script
+        const scriptId = "vturb-script-69d69717eeab8ff9b72c1914";
+        const existingScript = document.getElementById(scriptId);
+        if (existingScript) {
+          existingScript.remove();
+        }
+        
         const script = document.createElement("script");
-        script.id = newScriptId;
+        script.id = scriptId;
         script.src = "https://scripts.converteai.net/1b23d824-f7d5-46ac-8edc-700038ffb33d/players/69d69717eeab8ff9b72c1914/v4/player.js";
         script.async = true;
         document.head.appendChild(script);
       }
     };
 
-    const vturbTimeout = setTimeout(loadVturb, 1000);
+    // Use a small delay to ensure the DOM element is rendered by React
+    const vturbTimeout = setTimeout(loadVturb, 300);
 
     return () => {
-      window.removeEventListener('error', handleError);
-      window.removeEventListener('unhandledrejection', handleRejection);
-      console.log = originalLog;
       clearInterval(timer);
       clearTimeout(vturbTimeout);
     };
@@ -100,8 +64,7 @@ export default function App() {
 
     // Use a small timeout to ensure the DOM element is rendered by React after showContent is true
     const timeoutId = setTimeout(() => {
-      const funnelEl = document.getElementById('hotmart-sales-funnel');
-      if (hotmartWrapperRef.current && funnelEl) {
+      if (hotmartWrapperRef.current) {
         if (!document.getElementById('hotmart-script-loaded')) {
           const scriptLoad = document.createElement('script');
           scriptLoad.id = 'hotmart-script-loaded';
@@ -110,7 +73,7 @@ export default function App() {
           
           scriptLoad.onload = () => {
             const scriptSetup = document.createElement('script');
-            scriptSetup.innerHTML = "if(window.checkoutElements) { try { const el = document.getElementById('hotmart-sales-funnel'); if(el) { checkoutElements.init('salesFunnel').mount('#hotmart-sales-funnel'); } } catch(e) { console.warn('Hotmart Setup Error:', e.message || String(e)); } }";
+            scriptSetup.innerHTML = "if(window.checkoutElements) { try { checkoutElements.init('salesFunnel').mount('#hotmart-sales-funnel'); } catch(e) { console.error(e); } }";
             document.body.appendChild(scriptSetup);
           };
           
@@ -118,11 +81,11 @@ export default function App() {
         } else {
           // Script already loaded, just run the setup
           const scriptSetup = document.createElement('script');
-          scriptSetup.innerHTML = "if(window.checkoutElements) { try { const el = document.getElementById('hotmart-sales-funnel'); if(el) { checkoutElements.init('salesFunnel').mount('#hotmart-sales-funnel'); } } catch(e) { console.warn('Hotmart Setup Error:', e.message || String(e)); } }";
+          scriptSetup.innerHTML = "if(window.checkoutElements) { try { checkoutElements.init('salesFunnel').mount('#hotmart-sales-funnel'); } catch(e) { console.error(e); } }";
           document.body.appendChild(scriptSetup);
         }
       }
-    }, 1500);
+    }, 500);
 
     return () => clearTimeout(timeoutId);
   }, [showContent]);
@@ -137,10 +100,10 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#050505] text-white selection:bg-orange-500/30 overflow-x-hidden">
       {/* Top Warning Banner */}
-      <div className="bg-red-600/90 backdrop-blur-md text-white py-2.5 md:py-3 px-4 text-center sticky top-0 z-50 border-b border-red-500/20">
-        <div className="max-w-4xl mx-auto flex items-center justify-center gap-2 text-[10px] sm:text-xs md:text-base font-medium">
-          <AlertCircle className="w-4 h-4 md:w-5 md:h-5 animate-pulse shrink-0" />
-          <p className="leading-tight">
+      <div className="bg-red-600/90 backdrop-blur-md text-white py-3 px-4 text-center sticky top-0 z-50 border-b border-red-500/20">
+        <div className="max-w-4xl mx-auto flex items-center justify-center gap-2 text-sm md:text-base font-medium">
+          <AlertCircle className="w-5 h-5 animate-pulse" />
+          <p>
             PASO FINAL: <span className="font-bold">NO CIERRES NI ACTUALICES ESTA PÁGINA</span>. TU PEDIDO ESTÁ SIENDO PROCESADO.
           </p>
         </div>
@@ -155,33 +118,13 @@ export default function App() {
             animate={{ opacity: 1, y: 0 }}
             className="space-y-4"
           >
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className="inline-flex items-center px-3 py-1 rounded-full border border-orange-500/20 mb-8 md:mb-12"
-            >
-              <span className="text-orange-500 font-bold tracking-[0.3em] uppercase text-[8px] md:text-[10px]">Acceso Confirmado</span>
-            </motion.div>
-
-            <h1 className="flex flex-col items-center">
-              <span className="text-5xl md:text-8xl font-serif italic text-[#F5F2ED] leading-none tracking-tight">
-                ¡Felicidades!
-              </span>
-              <div className="flex items-center gap-4 w-full max-w-[280px] md:max-w-md my-6 md:my-10">
-                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-zinc-800 to-transparent" />
-                <span className="text-[9px] md:text-xs font-sans font-bold uppercase tracking-[0.4em] text-zinc-500 whitespace-nowrap">
-                  Bienvenido al
-                </span>
-                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-zinc-800 to-transparent" />
-              </div>
-              <span className="text-[2.8rem] md:text-[10rem] font-sans font-black not-italic text-white tracking-tighter leading-[0.8] drop-shadow-[0_20px_50px_rgba(255,255,255,0.12)]">
-                DICCIONARIO <br className="md:hidden" /> DE ACORDES
-              </span>
+            <h2 className="text-orange-500 font-bold tracking-widest uppercase text-sm">Acceso Confirmado</h2>
+            <h1 className="text-3xl md:text-6xl font-serif italic leading-tight">
+              ¡Felicidades! Bienvenido al <br />
+              <span className="font-sans font-bold not-italic text-white">DICCIONARIO DE ACORDES</span>
             </h1>
-
-            <p className="text-zinc-500 max-w-md mx-auto text-[11px] md:text-lg font-light leading-relaxed mt-8 md:mt-12 opacity-80">
-              Mira el video de bienvenida a continuación <br className="md:hidden" /> para conocer tus próximos pasos...
+            <p className="text-zinc-400 max-w-2xl mx-auto text-base md:text-lg">
+              Mira el video de bienvenida a continuación para conocer tus próximos pasos...
             </p>
           </motion.div>
 
@@ -193,11 +136,10 @@ export default function App() {
             className="relative rounded-2xl overflow-hidden border border-zinc-800 bg-zinc-900/50 orange-glow group flex items-center justify-center min-h-[300px] md:min-h-[480px]"
           >
             {/* Vturb Smart Player Container */}
-            <div className="w-full" ref={playerContainerRef}>
-              <div dangerouslySetInnerHTML={{ 
-                __html: '<vturb-smartplayer id="vid-69d69717eeab8ff9b72c1914" style="display: block; margin: 0 auto; width: 100%;"></vturb-smartplayer>' 
-              }} />
-            </div>
+            <div 
+              className="w-full" 
+              ref={playerContainerRef}
+            />
             
             <div className="absolute top-4 left-4 flex items-center gap-2 bg-black/60 px-3 py-1.5 rounded-full border border-white/10 z-10 pointer-events-none">
               <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
@@ -224,7 +166,7 @@ export default function App() {
                   <h4 className="text-lg md:text-xl text-zinc-400">Inversión única y exclusiva:</h4>
                   <div className="flex flex-col items-center gap-2">
                     <span className="text-zinc-600 line-through text-xl md:text-2xl">$97.00</span>
-                    <div className="text-6xl md:text-8xl font-black tracking-tighter">
+                    <div className="text-5xl md:text-8xl font-black tracking-tighter">
                       $14<span className="text-orange-500">.90</span>
                     </div>
                     <p className="text-orange-500 font-bold uppercase tracking-widest text-xs md:text-sm">¡Oferta de Lanzamiento!</p>
@@ -268,11 +210,11 @@ export default function App() {
               </section>
 
               {/* Headline & Subheadline */}
-              <section className="text-center space-y-4 md:space-y-6 max-w-4xl mx-auto px-2">
-                <h2 className="text-2xl md:text-5xl font-bold leading-tight">
+              <section className="text-center space-y-6 max-w-4xl mx-auto">
+                <h2 className="text-3xl md:text-5xl font-bold leading-tight">
                   ¿Você já sabe os acordes… mas ainda não soa profissional no teclado?
                 </h2>
-                <p className="text-lg md:text-2xl text-zinc-400 font-light leading-relaxed">
+                <p className="text-xl md:text-2xl text-zinc-400 font-light">
                   Descubra como transformar acordes simples em um som bonito e envolvente usando dedilhados e arpejos prontos.
                 </p>
               </section>
@@ -330,53 +272,53 @@ export default function App() {
               </section>
 
               {/* Bonus Section */}
-              <section className="bg-gradient-to-b from-orange-500/10 to-transparent p-6 md:p-16 rounded-3xl md:rounded-[3rem] border border-orange-500/20 text-center space-y-8 md:space-y-12">
+              <section className="bg-gradient-to-b from-orange-500/10 to-transparent p-8 md:p-16 rounded-[3rem] border border-orange-500/20 text-center space-y-12">
                 <div className="space-y-4">
-                  <span className="bg-orange-500 text-white text-[10px] md:text-xs font-black px-4 py-1 rounded-full uppercase tracking-tighter">Regalo Exclusivo</span>
+                  <span className="bg-orange-500 text-white text-xs font-black px-4 py-1 rounded-full uppercase tracking-tighter">Regalo Exclusivo</span>
                   <h2 className="text-3xl md:text-5xl font-bold">Bônus Especiais</h2>
                 </div>
                 
-                <div className="grid md:grid-cols-2 gap-6 md:gap-8">
+                <div className="grid md:grid-cols-2 gap-8">
                   {[
                     { title: "PDF com padrões prontos", desc: "Todo el material de apoyo para que no te pierdas ningún detalle." },
-                    { title: "Guia rápido por tonalidade", desc: "Encuentra el dedilhado perfeito para qualquer música ao instante." }
+                    { title: "Guia rápido por tonalidade", desc: "Encuentra el dedilhado perfecto para cualquier canción al instante." }
                   ].map((bonus, i) => (
-                    <div key={i} className="bg-black/40 p-6 md:p-8 rounded-2xl md:rounded-3xl border border-white/5 text-left space-y-4">
-                      <div className="w-10 h-10 md:w-12 md:h-12 bg-orange-500 rounded-xl md:rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/20">
-                        <Music className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                    <div key={i} className="bg-black/40 p-8 rounded-3xl border border-white/5 text-left space-y-4">
+                      <div className="w-12 h-12 bg-orange-500 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/20">
+                        <Music className="w-6 h-6 text-white" />
                       </div>
-                      <h3 className="text-lg md:text-xl font-bold">{bonus.title}</h3>
-                      <p className="text-zinc-500 text-xs md:text-sm leading-relaxed">{bonus.desc}</p>
+                      <h3 className="text-xl font-bold">{bonus.title}</h3>
+                      <p className="text-zinc-500 text-sm leading-relaxed">{bonus.desc}</p>
                     </div>
                   ))}
                 </div>
               </section>
 
               {/* Urgency & Guarantee */}
-              <section className="space-y-12 md:space-y-16">
-                <div className="bg-red-600/10 border border-red-600/20 p-6 md:p-8 rounded-2xl md:rounded-3xl text-center space-y-4">
-                  <AlertCircle className="w-6 h-6 md:w-8 md:h-8 text-red-600 mx-auto" />
-                  <h3 className="text-lg md:text-2xl font-bold text-red-500 uppercase tracking-tighter">¡Atención!</h3>
-                  <p className="text-zinc-400 text-sm md:text-base max-w-2xl mx-auto">
+              <section className="space-y-16">
+                <div className="bg-red-600/10 border border-red-600/20 p-8 rounded-3xl text-center space-y-4">
+                  <AlertCircle className="w-8 h-8 text-red-600 mx-auto" />
+                  <h3 className="text-xl md:text-2xl font-bold text-red-500 uppercase tracking-tighter">¡Atención!</h3>
+                  <p className="text-zinc-400 max-w-2xl mx-auto">
                     Essa oferta é exclusiva dessa página e não estará disponível novamente. Aproveita agora essa oportunidade única de elevar seu nível musical.
                   </p>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
-                  <div className="relative group max-w-xs mx-auto md:max-w-none">
+                <div className="grid md:grid-cols-2 gap-16 items-center">
+                  <div className="relative group">
                     <img 
                       src="https://i.ibb.co/kgGkcHHy/Chat-GPT-Image-23-de-mar-de-2026-23-27-43.png" 
                       alt="Garantía" 
-                      className="rounded-2xl md:rounded-3xl border border-white/10 shadow-2xl"
+                      className="rounded-3xl border border-white/10 shadow-2xl"
                       referrerPolicy="no-referrer"
                     />
-                    <div className="absolute -bottom-4 -right-4 md:-bottom-6 md:-right-6 bg-orange-500 p-4 md:p-6 rounded-xl md:rounded-2xl shadow-2xl shadow-orange-500/40">
-                      <ShieldCheck className="w-8 h-8 md:w-12 md:h-12 text-white" />
+                    <div className="absolute -bottom-6 -right-6 bg-orange-500 p-6 rounded-2xl shadow-2xl shadow-orange-500/40">
+                      <ShieldCheck className="w-12 h-12 text-white" />
                     </div>
                   </div>
-                  <div className="space-y-4 md:space-y-6 text-center md:text-left">
-                    <h2 className="text-2xl md:text-4xl font-serif italic">Garantía 100% <br /> <span className="not-italic font-sans font-bold">Libre de Riesgo</span></h2>
-                    <p className="text-zinc-400 leading-relaxed text-base md:text-lg">
+                  <div className="space-y-6">
+                    <h2 className="text-3xl md:text-4xl font-serif italic">Garantía 100% <br /> <span className="not-italic font-sans font-bold">Libre de Riesgo</span></h2>
+                    <p className="text-zinc-400 leading-relaxed text-lg">
                       Prueba el Pack de Dedilhados y Arpejos durante 30 días y si por alguna razón sientes que no es para ti, te devolveremos el 100% de lo que invertiste.
                     </p>
                   </div>
